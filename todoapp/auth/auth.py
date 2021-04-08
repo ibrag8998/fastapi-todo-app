@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
-from ..config.settings import ACCESS_TOKEN_EXPIRES, AUTH_JWT_ALGORITHM, SECRET_KEY
+from ..config import settings
 from ..db.base import Session
 from ..users.models import User
 from . import schemas
@@ -63,15 +63,15 @@ def create_access_token(sub: str, expires_delta: Optional[timedelta] = None) -> 
     """
 
     if expires_delta is None:
-        expires_delta = ACCESS_TOKEN_EXPIRES
+        expires_delta = settings.ACCESS_TOKEN_EXPIRES
 
     return jwt.encode(
         {
             'sub': sub,
             'exp': datetime.utcnow() + expires_delta,
         },
-        key=SECRET_KEY,
-        algorithm=AUTH_JWT_ALGORITHM,
+        key=settings.SECRET_KEY,
+        algorithm=settings.AUTH_JWT_ALGORITHM,
     )
 
 
@@ -82,7 +82,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTH_JWT_ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.AUTH_JWT_ALGORITHM])
     except JWTError:
         raise CredentialsError()
 
@@ -107,6 +107,6 @@ async def obtain_access_token(data: OAuth2PasswordRequestForm = Depends()):
     if not user:
         raise CredentialsError()
 
-    access_token = create_access_token(sub=user.username, expires_delta=ACCESS_TOKEN_EXPIRES)
+    access_token = create_access_token(sub=user.username, expires_delta=settings.ACCESS_TOKEN_EXPIRES)
 
     return {"access_token": access_token, "token_type": "bearer"}
