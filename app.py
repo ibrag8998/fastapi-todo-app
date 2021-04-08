@@ -1,15 +1,10 @@
 from fastapi import FastAPI
 
-from todoapp.auth import auth
-from todoapp.db.base import init_db
+from todoapp.core.init import init
 
 app = FastAPI()
 
-# init database
-init_db()
-
-# include the routers
-app.include_router(auth.r)
+init(app)
 
 # load the playground for debug purposes
 from todoapp import playground  # noqa

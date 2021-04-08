@@ -1,6 +1,13 @@
 import os
 from datetime import timedelta
 
+
+def router(name: str) -> str:
+    return f'{name}.routes.{name}_router'
+
+
+PACKAGE_NAME = os.path.split(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))[-1]
+
 DEBUG = bool(os.environ.get('DEBUG', False))
 
 # to get a string like this run:
@@ -14,3 +21,13 @@ if DEBUG:
     ACCESS_TOKEN_EXPIRES = timedelta(days=30)
 
 AUTH_JWT_ALGORITHM = "HS256"
+
+MODELS_MODULES = [
+    'users.models',
+    'todos.models',
+]
+
+ROUTERS = [
+    # 'auth.routes.auth_router',
+    router('auth'),
+]

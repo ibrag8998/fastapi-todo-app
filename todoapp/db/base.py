@@ -4,18 +4,14 @@ from sqlalchemy import orm
 from todoapp.config import settings
 
 
-class BaseModel:
+@orm.as_declarative()
+class Base:
     id = sa.Column(sa.Integer, primary_key=True)
 
 
-def init_db():
-    # import models
-    from ..todos import models
-    from ..users import models
-
+def create_all_tables():  # для экспорта
     Base.metadata.create_all(engine)
 
 
 engine = sa.create_engine(settings.DB_URL, echo=settings.DEBUG)
-Base = orm.declarative_base(cls=BaseModel)
 Session = orm.sessionmaker(bind=engine)
