@@ -18,4 +18,4 @@ class User(Base):
         self.password = generate_password_hash(raw)
 
     def check_password(self, raw: str) -> bool:
-        return check_password_hash(self.password, raw)
+        return check_password_hash(raw, self.password)
